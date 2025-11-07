@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Risk Result</title>
+  <link rel="icon" href="/static/images/ico.ico">
+  <link rel="stylesheet" href="/static/style.css"> 
+   
+  <script src="https://cdn.jsdelivr.net/npm/gaugeJS/dist/gauge.min.js"></script>
+
+</head>
+<body>
+  <div class="container">
+    <div class="navbar">
+      <a href="/" class="brand"><img src="/static/images/logo.png" alt="" class="logo">HealOn</a>
+      <div class="nav-links">
+        <a href="/tb">TB Detector</a>
+        <a href="/health-risk">Health Score</a>
+        <a href="/medulla">Medulla</a>
+        <a href="mailto:blot.talk@gmail.com">Contact</a>
+      </div>
+    </div>
+    
+    <div class="risk-header ">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          {% if diab_risk > 30 or heart_risk > 30 %}
+      <img src="/static/images/alert.png" class="header-img" alt="">
+      <div class="risk-badge">RISK DETECTED</div>
+   {% else %}
+      <img src="/static/images/safe.png" class="header-img" alt="">
+      <div class="risk-badge" style="background-color: #2cb67d;">NO RISK DETECTED</div>
+   {% endif %}
+ 
+        </div>
+    <div class="gauge-box">
+      <canvas id="riskGauge"></canvas>
+
+    </div>
+    </div>
+    </div>
+
+   
+    <div class="risk-grid">
+      <div class="risk-card wide">
+        <h3>DIABETES RISK SCORE</h3>
+        <div class="value {{ 'green' if diab_risk <= 30 else 'red' }}">{{diab_risk}}</div>
+        <div class="sub">Normal: &lt; 30</div>
+      </div>
+      <div class="risk-card wide">
+        <h3>HEART RISK SCORE</h3>
+        <div class="value {{ 'green' if heart_risk <= 30 else 'red' }}">{{heart_risk}}</div>
+        <div class="sub">Normal: &lt; 30</div>
+      </div>
+    </div>
+
+    <div class="risk-grid">
+      
+<div class="risk-card">
+  <h3>AGE</h3>
+  <img src="/static/images/age.png" alt="">
+  <div class="value green">{{ info['age'] }}</div>
+  <div class="sub"></div>
+</div>
+
+
+<div class="risk-card">
+  <h3>GENDER</h3>
+  <img src="/static/images/gender.png" alt="">
+  <div class="value green">{{ info['gender'] }}</div>
+  <div class="sub"></div>
+</div>
+
+
+<div class="risk-card">
+  <h3>BLOOD GROUP</h3>
+  <img src="/static/images/blood.png" alt="">
+  <div class="value green">{{ info['blood_group'] }}</div>
+  <div class="sub"></div>
+</div>
+
+<div class="risk-card">
+  <h3>BMI</h3>
+  <img src="/static/images/bmi.png" alt="">
+  <div class="value {% if 18.5 <= info['bmi'] <= 24.9 %}green{% else %}red{% endif %}">{{ info['bmi'] }}</div>
+  <div class="sub">Normal: 18.5 – 24.9</div>
+</div>
+
+
+<div class="risk-card">
+  <h3>BLOOD PRESSURE</h3>
+  <img src="/static/images/bp.png" alt="">
+  <div class="value {% if 90 <= info['systolic_bp'] <= 120 %}green{% else %}red{% endif %}">{{ info['systolic_bp'] }}</div>
+  <div class="sub">Normal: 90 – 120 mmHg</div>
+</div>
+
+
+<div class="risk-card">
+  <h3>CHOLESTEROL</h3>
+  <img src="/static/images/chol.png" alt="">
+  <div class="value {% if info['cholesterol'] < 200 %}green{% else %}red{% endif %}">{{ info['cholesterol'] }}</div>
+  <div class="sub">Normal: &lt; 200 mg/dL</div>
+</div>
+
+
+<div class="risk-card">
+  <h3>STRESS LEVEL</h3>
+  <img src="/static/images/stress.png" alt="">
+  <div class="value {% if info['stress_level'] <= 4 %}green{% else %}red{% endif %}">{{ info['stress_level'] }}</div>
+  <div class="sub">Better: ≤ 4 / 10</div>
+</div>
+
+
+<div class="risk-card">
+  <h3>SLEEP HOURS</h3>
+  <img src="/static/images/sleep.png" alt="">
+  <div class="value {% if 7 <= info['sleep_hours'] <= 9 %}green{% else %}red{% endif %}">{{ info['sleep_hours'] }}</div>
+  <div class="sub">Normal: 7 – 9 hrs/day</div>
+</div>
+
+
+<div class="risk-card">
+  <h3>WORK HOURS</h3>
+  <img src="/static/images/work.png" alt="">
+  <div class="value {% if info['work_hours'] <= 9 %}green{% else %}red{% endif %}">{{ info['work_hours'] }}</div>
+  <div class="sub">Healthy: ≤ 9 hrs/day</div>
+</div>
+
+
+<div class="risk-card">
+  <h3>EXERCISE / WEEK</h3>
+  <img src="/static/images/exercise.png" alt="">
+  <div class="value {% if info['exercise_per_week'] >= 3 %}green{% else %}red{% endif %}">{{ info['exercise_per_week'] }}</div>
+  <div class="sub">Recommended: ≥ 3 times/week</div>
+</div>
+
+
+<div class="risk-card">
+  <h3>JUNK FOOD / MONTH</h3>
+  <img src="/static/images/junk.png" alt="">
+  <div class="value {% if info['junk_food_per_month'] <= 2 %}green{% else %}red{% endif %}">{{ info['junk_food_per_month'] }}</div>
+  <div class="sub">Healthy: ≤ 2 times/week</div>
+</div>
+
+
+<div class="risk-card">
+  <h3>FAMILY HISTORY</h3>
+  <img src="/static/images/family.png" alt="">
+  <div class="value {% if info['family_history'] == 0 %}green{% else %}red{% endif %}">
+    {% if info['family_history'] == 1 %}Yes{% else %}No{% endif %}
+  </div>
+  <div class="sub"></div>
+</div>
+
+
+
+      
+    </div>
+
+   
+  
+   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    // gauge and needle code
+    let currentValue = 0; 
+
+    // Needle plugin
+    const gaugeNeedle = {
+      id: 'gaugeNeedle',
+      afterDatasetDraw(chart, args, options) {
+        const { ctx, chartArea: { width, height } } = chart;
+        ctx.save();
+
+        const cx = chart.width / 2;
+        const cy = chart.height - 60;
+
+        let angle = (Math.PI * (valToRatio(currentValue) - 0.5));
+
+        ctx.translate(cx, cy);
+        ctx.rotate(angle);
+
+        // Needle line
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(0, -height / 2.2);
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = '#fff';
+        ctx.stroke();
+        ctx.restore();
+
+        // Center circle
+        ctx.beginPath();
+        ctx.arc(cx, cy, 8, 0, 2 * Math.PI);
+        ctx.fillStyle = '#fff';
+        ctx.fill();
+        ctx.restore();
+      }
+    };
+
+    function valToRatio(v) {
+      return Math.min(Math.max(v, 0), 100) / 100;
+    }
+
+    const ctx = document.getElementById('riskGauge').getContext('2d');
+    const gaugeChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Low', 'Medium', 'High'],
+        datasets: [{
+          data: [20, 20, 20, 20, 20], 
+backgroundColor: [
+  '#2cb67d', 
+  '#8bc34a', 
+  '#ffeb3b', 
+  '#ffad33', 
+  '#ef4565'  
+],
+          borderWidth: 0,
+          circumference: 180,
+          rotation: 270 
+        }]
+      },
+      options: {
+        responsive: true,
+        cutout: '70%',
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: false }
+        }
+      },
+      plugins: [gaugeNeedle]
+    });
+
+    function setGaugeValue(val) {
+      currentValue = val;
+      gaugeChart.update();
+    }
+
+    let diab_s = {{ diab_risk | tojson}};
+    let heart_s = {{ heart_risk | tojson}};
+
+    
+    setGaugeValue(diab_s>heart_s?diab_s:heart_s);   
+    // setGaugeValue(50); // middle
+    // setGaugeValue(80); // right side
+  </script>
+</body>
+</html>

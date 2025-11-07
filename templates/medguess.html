@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Medeulla</title>
+  <link rel="icon" href="/static/images/ico.ico">
+  <link rel="stylesheet" href="/static/style.css">
+  
+</head>
+<body>
+  <div class="container">
+    <div class="navbar">
+      <a href="/" class="brand"><img src="/static/images/logo.png" alt="" class="logo">HealOn</a>
+      <div class="nav-links">
+        <a href="/tb">TB Detector</a>
+        <a href="/health-risk">Health Score</a>
+        <a href="/medulla">Medulla</a>
+        <a href="mailto:blot.talk@gmail.com">Contact</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-wrapper">
+    <h2 class="form-title">MEDEULLA</h2>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('medguess')">MEDGUESS</button>
+      <button class="tab-btn" onclick="switchTab('alternative')">ALTERNATIVE FINDER</button>
+    </div>
+
+    <!-- Medguess Tab -->
+    <div id="medguess" class="tab-content">
+        <form id="searchForm">
+        <div class="banner"><img src="/static/images/medguess_b.png" alt=""></div>
+        <div class="grid-form">
+        <div class="form-control">
+            
+               <label for="fuzzy">ENTER FUZZY NAME YOU ARE NOT ABLE TO RECALL</label>
+          <input id="search" type="text" id="fuzzy" name="fuzzy">
+            </div>
+            </div>
+          
+           <div class="btn">
+               <button class="submit-btn" type="submit">FIND IT</button>
+        </div>
+        
+        </form>
+     
+         <div class="med-item" style="margin: 10px 0;">
+          <span class="med-name">Medicine</span>
+          <span class="med-name">Usage</span>
+          <span class="med-name">Confidence</span>
+          
+            
+       </div>
+      <div class="med-list" id="medguess-list"></div>
+    </div>
+
+    <!-- Alternative Tab -->
+    <div id="alternative" class="tab-content hidden">
+       <form  id="altForm" >
+         <div class="banner"><img src="/static/images/medalt_b.png" alt=""></div>
+        <div class="form-grid">
+          <div class="form-control">
+            <label for="type">WHAT ARE YOU PROVIDING?</label>
+            <select id="type"  name="provide">
+              <option value="">Select...</option>
+              <option value="name">Medicine Name</option>
+              <option value="sympotom">Symptoms</option>
+            </select>
+          </div>
+          <div class="form-control">
+            <label for="altQuery">ENTER MEDECINE NAME OR SYMPOTOMS</label>
+            <input type="text" id="altQuery" name="medname">
+          </div>
+        </div>
+        <div class="btn">
+           <button class="submit-btn" type="submit">FIND IT</button>
+        </div>
+        
+      </form>
+
+      <div class="med-item" style="margin: 10px 0;">
+          <span class="med-name">Image</span>
+          <span class="med-name">Medicine</span>
+          <span class="med-name">Usage</span>
+          <span class="med-name">Confidence</span>
+            
+       </div>
+
+      <div class="med-list" id="alternative-list"></div>
+    </div>
+  </div>
+
+  <script>
+    // Dummy data for testing
+    const meds = [
+      { name: "Medname A", confi: 76.32, usage:"this medecine is designed to ", img: "tr.png" },
+      { name: "Medname B capsule maasa", price: 65.20, img: "https://via.placeholder.com/50" },
+      { name: "Medname C", price: 54.10, img: "https://via.placeholder.com/50" }
+    ];
+
+
+ // This function take array of medicines and displays it
+    function renderList(type, info) {
+      const container = document.getElementById(type + "-list");
+      container.innerHTML = "";
+
+      info.forEach(med => {
+        const div = document.createElement("div");
+        div.classList.add("med-item");
+
+        if (type === "alternative") {
+          div.innerHTML = `
+            <img src="${med.url}" alt="medicine">
+            <span class="med-name">${med.name}</span>
+            <p>${med.usage}</p>
+            <span>${med.confi}</span>
+          `;
+        } else {
+          div.innerHTML = `
+            <span class="med-name">${med.name}</span>
+            <p>${med.usage}</p>
+            <span>${med.confi}</span>
+          `;
+        }
+
+        container.appendChild(div);
+      });
+    }
+
+    // Funtion for tab switching functionality
+
+    function switchTab(tab) {
+      document.querySelectorAll(".tab-content").forEach(c => c.classList.add("hidden"));
+      document.getElementById(tab).classList.remove("hidden");
+
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      document.querySelector(`.tab-btn[onclick="switchTab('${tab}')"]`).classList.add("active");
+    }
+
+    // Load data when form is submitted
+    document.getElementById("searchForm").addEventListener("submit", async function(e) {
+    e.preventDefault(); 
+
+    const query = document.getElementById("search").value;
+    const response = await fetch("/guess", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ query: query })   
+    });
+
+  
+
+    const results = await response.json();
+
+    renderList("medguess",results);
+
+  });
+
+  // alternatives meds form evenlistner
+
+   document.getElementById("altForm").addEventListener("submit", async function(e) {
+    e.preventDefault(); 
+
+    const type = document.getElementById("type").value;
+    const query = document.getElementById("altQuery").value;
+    const response = await fetch("/altmed", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ type: type, query: query })   
+    });
+   
+
+  
+
+    const results = await response.json();
+
+    renderList("alternative",results);
+
+  });
+    
+    
+  </script>
+</body>
+</html>

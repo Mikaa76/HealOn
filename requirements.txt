@@ -1,0 +1,14 @@
+torch
+torchvision
+timm
+pillow
+numpy
+tqdm
+pandas
+joblib
+flask
+opencv-python
+rapidfuzz
+scikit-learn
+paddleocr
+sqlite3

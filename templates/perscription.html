@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Periscope</title>
+  <link rel="icon" href="/static/images/ico.ico">
+  <link rel="stylesheet" href="/static/style.css">
+ 
+</head>
+<body>
+
+  <div class="container">
+    <div class="navbar">
+      <a href="/" class="brand"><img src="/static/images/logo.png" alt="" class="logo">HealOn</a>
+      <div class="nav-links">
+        <a href="/tb">TB Detector</a>
+        <a href="/health-risk">Health Score</a>
+        <a href="/medulla">Medulla</a>
+        <a href="mailto:blot.talk@gmail.com">Contact</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-wrapper">
+    <h2 class="form-title">PERISCOPE</h2>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('medguess')">ADD RECORDS</button>
+      <button class="tab-btn" onclick="switchTab('alternative')">RETRIEVE</button>
+    </div>
+
+    <!-- Medguess Tab -->
+    <div id="medguess" class="tab-content">
+        {% if added == 1 %}
+      <h2 class="form-title">SUBMITTED ✅</h2>
+       {% endif %}
+
+      
+
+      <!-- Flask form -->
+      <form action="{{url_for('record')}}" method="POST" enctype="multipart/form-data">
+        <div class="banner"><img src="/static/images/add_b.png" alt=""></div>
+        <input type="hidden" name="add" value="1">
+        <div class="form-grid">
+          <div class="form-control">
+            <label for="age">PATIENT ID</label>
+            <input type="number" name="id" id="age" min="0" step="1" placeholder="Enter ID" required>
+          </div>
+          <div class="form-control" >
+          <label for="chol">FIRST NAME</label>
+          <input type="text" name="name" id="chol" placeholder="Enter First Name" required>
+        </div>
+          <div class="form-control">
+  <label for="dob">DATE</label>
+  <input type="date" name="date" id="dob" required>
+</div>
+   
+          
+        </div>
+         <div class="form-control" style="margin-bottom: 30px;">
+  <label for="dob">DOC's REMARKS</label>
+  <input type="text" name="remarks" id="dob" required>
+</div>
+
+        <div class="form-grid">
+          <div class="form-control">
+  <label for="file">Upload image</label>
+  <input type="file"  id="file" accept="image/*" hidden>
+            <label for="file" id="uploadbox" class="upload-box">⬆️ UPLOAD IMAGE</label>
+  
+</div>
+          <div class="form-control">
+            <label for="text">PERSCRIPTION</label>
+            <textarea name="perscription" id="text" placeholder="Anything additional to uploaded image"></textarea>
+          </div>
+        </div>
+          <div class="btn">
+           <button type="submit" class="submit-btn">ADD RECORD</button>
+        </div>
+        
+      </form>
+  
+  
+    </div>
+
+    <div id="alternative" class="tab-content hidden">
+       <form  id="fetchForm" enctype="multipart/form-data">
+         <div class="banner"><img src="/static/images/retrieve_b.png" alt=""></div>
+        <div class="form-grid">
+          
+          <div class="form-control">
+            <label for="medname">ENTER PATIENT'S ID</label>
+            <input type="number" id="pid" name="pid">
+          </div>
+        </div>
+        <div class="btn">
+          <button class="submit-btn" type="submit">FETCH RECORDS</button>
+        </div>
+        
+      </form>
+       <div class="med-item" style="margin: 10px 0;">
+          <span class="med-name">Date</span>
+          <span class="med-name">Perscription</span>
+          <span class="med-name">Remarks</span>
+            
+       </div>
+       <div class="med-item">
+        <span class="med-name">Summary</span>
+        <p id="summary" style="font-size: 15px; max-width: 70%;">Summary will go here.</p>
+       </div>
+      <div class="med-list" id="records-list"></div>
+    </div>
+  </div>
+
+  <script>
+
+    // Show image after upload
+
+      const fileInput = document.getElementById("file");
+  const uploadBox = document.getElementById("uploadbox");
+  const text = document.getElementById("text");
+
+
+
+  fileInput.addEventListener("change", async () => {
+    const file = fileInput.files[0];
+    if (file) {
+    
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        uploadBox.innerHTML = `<img src="${e.target.result}" 
+                                 style="max-height:220px;
+                                        width:auto; 
+                                        border-radius:10px;" 
+                                 alt="Preview">`;
+
+                          text.value = "Extracting text from image..."
+      };
+      reader.readAsDataURL(file);
+
+      // OCR api to extract text
+      const formData = new FormData();
+      formData.append("file", file);
+
+      try {
+        const res = await fetch("/ocr", {
+          method: "POST",
+          body: formData
+        });
+
+        const data = await res.json();
+        text.value = data['text'];
+
+      
+
+      } catch (err) {
+        console.error("Upload failed:", err);
+        alert("❌ Something went wrong with OCR!");
+      }
+
+    } else {
+      uploadBox.textContent = "⬆️ Upload image";
+    }
+  });
+
+
+  // preview image
+  // fileInput.addEventListener("change", () => {
+  //   const file = fileInput.files[0];
+  //   if (file) {
+  //     const reader = new FileReader();
+  //     reader.onload = (e) => {
+  //       uploadBox.innerHTML = `<img src="${e.target.result}" 
+  //                                style=" max-height:220px;
+  //                                width:auto; border-radius:10px;" 
+  //                                alt="Preview">`;
+  //     };
+  //     reader.readAsDataURL(file);
+  //   } else {
+  //     uploadBox.textContent = "⬆️ Upload image"; 
+  //   }
+  // });
+
+
+   
+    function renderList(type,results) {
+      const container = document.getElementById(type + "-list");
+      container.innerHTML = "";
+      
+     
+      if (type === "records") {
+       results.forEach(med => {
+        const div = document.createElement("div");
+        div.classList.add("med-item");
+
+        
+          div.innerHTML = `
+        
+            <span class="med-name">${med.date}</span>
+            <p>${med.perscription}</p>
+            <p>${med.remarks}</p>
+          `;
+
+          container.appendChild(div);
+        });
+
+        
+      }
+    }
+
+    // Tabs switching functionality
+
+    function switchTab(tab) {
+      document.querySelectorAll(".tab-content").forEach(c => c.classList.add("hidden"));
+      document.getElementById(tab).classList.remove("hidden");
+
+      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+      document.querySelector(`.tab-btn[onclick="switchTab('${tab}')"]`).classList.add("active");
+    }
+
+    // Fetch records once form is submitted
+     const summary = document.getElementById('summary');
+     document.getElementById("fetchForm").addEventListener("submit", async function(e) {
+    e.preventDefault(); 
+  
+    const pid = document.getElementById("pid").value;
+    let response = await fetch("/records", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ id: pid })  
+    });
+
+  
+
+    let results = await response.json();
+
+    await renderList("records",results);
+
+    let array_of_results = [];
+    results.forEach( rec => {
+            array_of_results.push(`{${rec.date}, ${rec.perscription}, ${rec.remarks}}`)
+    })
+    summary.innerText= "Creating Summary.....";
+    const GEMINI_API_KEY = "AIzaSyC7h0U1ok5nrShoh_sNz9_971jdNHqqf64";
+    const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + GEMINI_API_KEY;
+
+    let prompt = "I am providing you with track record of a patient including dates, perscription given by doctor and doctor's remarks. Generate a 5 line summary guiding doctor how's patient doing or any other suggestion you have related treatment, no here's 5 line ... intro needed" + array_of_results;
+    
+    response = await fetch(url, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    contents: [
+      {
+        parts: [{ text: prompt }],
+      },
+    ],
+  }),
+});
+
+  results = await response.json()
+  results = results.candidates[0].content.parts[0].text;
+  console.log(prompt);
+  console.log(results)
+  summary.innerText = results;
+
+
+
+  });
+
+  // ocr logic
+
+  
+    
+    
+  </script>
+</body>
+</html>

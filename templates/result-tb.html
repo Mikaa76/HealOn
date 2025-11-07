@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TB Report</title>
+  <link rel="icon" href="/static/images/ico.ico">
+  <link rel="stylesheet" href="/static/style.css"> 
+
+   
+  <script src="https://cdn.jsdelivr.net/npm/gaugeJS/dist/gauge.min.js"></script>
+  
+</head>
+<body>
+  <div class="container">
+    <div class="navbar">
+      <a href="/" class="brand"><img src="/static/images/logo.png" alt="" class="logo">HealOn</a>
+      <div class="nav-links">
+        <a href="/tb">TB Detector</a>
+        <a href="/health-risk">Health Score</a>
+        <a href="/medulla">Medulla</a>
+        <a href="mailto:blot.talk@gmail.com">Contact</a>
+      </div>
+    </div>
+    
+    <div class="risk-header ">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+ 
+   {% if tb == 1 %}
+      <img src="/static/images/alert.png" class="header-img" alt="">
+      <div class="risk-badge">TB DETECTED</div>
+   {% elif tb == 0 %}
+      <img src="/static/images/safe.png" class="header-img" alt="">
+      <div class="risk-badge" style="background-color: #2cb67d;">NO TB DETECTED</div>
+   {% endif %}
+        </div>
+    <div class="gauge-box">
+      <canvas id="riskGauge"></canvas>
+
+    </div>
+    </div>
+    </div>
+
+    
+    <div class="risk-grid">
+      <div class="risk-card " style="width: 40%;">
+        <h3>CONFIDENCE SCORE</h3>
+        {% if conf < 70 %}
+        <div class="value red">{{conf}}%</div>
+        {% else %}
+        <div class="value green">{{conf}}%</div>
+        {% endif %}
+        <div class="sub">Trustworthy: &gt; 70</div>
+      </div>
+    </div>
+
+    
+    
+
+   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    let currentValue = 0; 
+
+    // Needle plugin
+    const gaugeNeedle = {
+      id: 'gaugeNeedle',
+      afterDatasetDraw(chart, args, options) {
+        const { ctx, chartArea: { width, height } } = chart;
+        ctx.save();
+
+        const cx = chart.width / 2;
+        const cy = chart.height - 60;
+
+        
+        let angle = (Math.PI * (valToRatio(currentValue) - 0.5));
+
+        ctx.translate(cx, cy);
+        ctx.rotate(angle);
+
+        // Needle line
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(0, -height / 2.2);
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = '#fff';
+        ctx.stroke();
+        ctx.restore();
+
+        // Center circle
+        ctx.beginPath();
+        ctx.arc(cx, cy, 8, 0, 2 * Math.PI);
+        ctx.fillStyle = '#fff';
+        ctx.fill();
+        ctx.restore();
+      }
+    };
+
+    function valToRatio(v) {
+      
+      return Math.min(Math.max(v, 0), 100) / 100;
+    }
+
+    const ctx = document.getElementById('riskGauge').getContext('2d');
+    const gaugeChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Low', 'Medium', 'High'],
+        datasets: [{
+          data: [20, 20, 20, 20, 20], 
+backgroundColor: [
+'#ef4565','#ffad33','#ffeb3b','#8bc34a','#2cb67d'
+   
+],
+          borderWidth: 0,
+          circumference: 180,
+          rotation: 270 
+        }]
+      },
+      options: {
+        responsive: true,
+        cutout: '70%',
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: false }
+        }
+      },
+      plugins: [gaugeNeedle]
+    });
+
+    function setGaugeValue(val) {
+      currentValue = val;
+      gaugeChart.update();
+    }
+
+    let valFlask = {{ conf | tojson}};
+    
+
+    
+    setGaugeValue(valFlask);   
+    // setGaugeValue(50); // middle
+    // setGaugeValue(80); // right side
+  </script>
+</body>
+</html>

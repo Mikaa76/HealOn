@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Health Risk Predictor</title>
+  <link rel="icon" href="/static/images/ico.ico">
+  <link rel="stylesheet" href="/static/style.css"> 
+  <style>
+  
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="navbar">
+      <a href="/" class="brand"><img src="/static/images/logo.png" alt="" class="logo">HealOn</a>
+      <div class="nav-links">
+        <a href="/tb">TB Detector</a>
+        <a href="/health-risk">Health Score</a>
+        <a href="/medulla">Medulla</a>
+        <a href="mailto:blot.talk@gmail.com">Contact</a>
+      </div>
+    </div>
+    <div class="form-wrapper">
+      <h2 class="form-title">HEALTH RISK PREDICTOR</h2>
+
+      
+
+      <form action="{{url_for('predict_health')}}" method="POST" enctype="multipart/form-data">
+        <div class="banner"><img src="/static/images/health_b.png" alt=""></div>
+        <div class="form-grid">
+          <div class="form-control">
+            <label for="age">AGE</label>
+            <input type="number" name="age" id="age" min="0" step="1" placeholder="Enter age" required>
+          </div>
+          <div class="form-control">
+            <label for="gender">GENDER</label>
+            <select name="gender" id="gender" required>
+              <option value="">Select</option>
+              <option value="M">Male</option>
+              <option value="F">Female</option>
+            </select>
+          </div>
+          <div class="form-control">
+            <label for="blood">BLOOD GROUP</label>
+            <select name="blood" id="blood" required>
+              <option value="">Select</option>
+              <option value="A+">A+</option>
+<option value="A-">A-</option>
+<option value="B+">B+</option>
+<option value="B-">B-</option>
+<option value="O+">O+</option>
+<option value="O-">O-</option>
+<option value="AB+">AB+</option>
+<option value="AB-">AB-</option>
+
+            </select>
+          </div>
+          <div class="form-control" >
+          <label for="chol">BMI</label>
+          <input type="number" name="bmi" id="chol" step="0.1" placeholder="Enter BMI" required>
+        </div>
+        <div class="form-control" >
+          <label for="chol">BLOOD PRESSURE</label>
+          <input type="number" name="bp" id="chol" step="1" placeholder="Enter Blood Pressure" required>
+        </div>
+        <div class="form-control" >
+          <label for="chol">CHOLESTEROL</label>
+          <input type="number" name="chol" id="chol" step="0.1" placeholder="Enter Cholesterol" required>
+        </div>
+        <div class="form-control">
+            <label for="chest">CHEST PAIN</label>
+            <select name="chest" id="blood" required>
+              <option value="">Select</option>
+              <option value="0">No Pain</option>
+<option value="1">Mild Pain</option>
+<option value="2">Moderate Pain</option>
+<option value="3">Severe Pain</option>
+            </select>
+          </div>
+        <div class="form-control">
+            <label for="blood">STRESS LEVEL</label>
+            <select name="stress" id="blood" required>
+              <option value="">Select</option>
+              <option value="1">1</option>
+<option value="2">2</option>
+<option value="3">3</option>
+<option value="4">4</option>
+<option value="5">5</option>
+<option value="6">6</option>
+<option value="7">7</option>
+<option value="8">8</option>
+<option value="9">9</option>
+<option value="10">10</option>
+            </select>
+          </div>
+          <div class="form-control" >
+          <label for="chol">SLEEP HOURS</label>
+          <input type="number" name="sleep" id="chol" step="0.1" placeholder="Enter Sleep Hours" required>
+        </div>
+        <div class="form-control" >
+          <label for="chol">WORK HOURS</label>
+          <input type="number" name="work" id="chol" step="0.1" placeholder="Enter Work Hours" required>
+        </div>
+        <div class="form-control">
+            <label for="blood">EXERCISE PER WEEK</label>
+            <select name="exercise" id="blood" required>
+              <option value="">Select</option>
+              <option value="1">1</option>
+<option value="2">2</option>
+<option value="3">3</option>
+<option value="4">4</option>
+<option value="5">5</option>
+<option value="6">6</option>
+<option value="7">7</option>
+<option value="8">8</option>
+<option value="9">9</option>
+<option value="10">10</option>
+            </select>
+          </div>
+          <div class="form-control" >
+          <label for="chol">JUNK FOOD PER WEEK</label>
+          <input type="number" name="junk" id="chol" step="1" placeholder="Junk Food Per Week" required>
+        </div>
+        <div class="form-control">
+            <label for="gender">DO YOU HAVE FAMILY HISTORY OF DIAB... OR HEART DIS..?</label>
+            <select name="fam" id="gender" required>
+              <option value="">Select</option>
+              <option value="1">Yes</option>
+              <option value="0">No</option>
+            </select>
+          </div>
+          
+        </div>
+
+       
+        <div class="btn">
+             <button type="submit" class="submit-btn">ANALYZE RISK</button>
+        </div>
+        
+      </form>
+    </div>
+  </div>
+</body>
+</html>

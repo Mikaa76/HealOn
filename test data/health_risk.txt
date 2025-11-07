@@ -1,0 +1,36 @@
+
+here's the range given.. you can put random values in form to get the result.
+
+age [19 – 80]
+
+gender [M, F]
+[M for Male, F for Female]
+
+blood group [A+, A-, B+, B-, AB+, AB-, O+, O-]
+
+bmi [14 – 42]
+[Body Mass Index value]
+
+systolic_bp [90 – 160]
+
+cholesterol [130 – 280]
+
+chest_pain [0 – 3]
+[0 = No pain, 1 = Mild, 2 = Moderate, 3 = Severe]
+[Chest pain severity scale]
+
+stress_level [0 – 10]
+[Self-reported stress level, 0 = no stress, 10 = extreme stress]
+
+sleep_hours [4 – 13]
+[Average daily sleep duration in hours]
+
+exercise_per_week [0 – 6]
+[Number of exercise sessions per week]
+
+junk_food_per_month [1 – 20]
+[Number of junk food meals per month]
+
+family_history [0, 1]
+[0 = No, 1 = Yes]
+[If person’s family has a history of diabetes or heart risk]
